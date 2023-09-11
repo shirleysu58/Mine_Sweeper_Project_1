@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<TextView> cell_tvs;
     private TextView[][] mineSweeperGrid;
     private boolean[][] isBomb;
+    private boolean[][] hasRevealed;
+    private boolean[][] placeFlag;
 
     private int dpToPixel(int dp) {
         float density = Resources.getSystem().getDisplayMetrics().density;
@@ -35,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         cell_tvs = new ArrayList<TextView>();
         mineSweeperGrid = new TextView[12][10];
         isBomb = new boolean[12][10];
+        hasRevealed = new boolean[12][10];
+        placeFlag = new boolean[12][10];
 
 
         GridLayout grid = (GridLayout) findViewById(R.id.gridLayout01);
@@ -59,6 +65,59 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void revealAllAdjacentBFS(int i, int j) { // if adjcant has bomb, then stop there
+        Queue<int[]> queue = new LinkedList();
+        int[] row = {1,-1,0,0,1,-1,-1,1};
+        int[] col = {0,0,1,-1,1,-1,1,-1};
+
+        boolean[][] hasVisited = new boolean[12][10];
+        queue.add(new int[]{i, j}); // add to queue
+        hasVisited[i][j] = true; //
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll(); // pop it out
+            for (int k = 0; k < 8; k++) { // check all adjacent
+                int r1 = curr[0] + row[k];
+                int c1 = curr[1] + col[k];
+
+                if (r1 >= 0 && r1 < 12 && c1 >= 0 && c1 < 10 && !hasVisited[r1][c1] && !placeFlag[r1][c1]) {
+                    int adjBomb = numAdjacentMine(r1, c1);
+                    if (adjBomb == 0) {
+                        queue.add(new int[]{r1, c1}); // add no adj bomb to queue
+                    }
+                    // reveal tile (bomb adj)
+                    revealTile(mineSweeperGrid[r1][c1], adjBomb);
+                    hasRevealed[r1][c1] = true;
+
+                    // update has visited grid
+                    hasVisited[r1][c1] = true;
+                }
+            }
+        }
+    }
+
+    private void revealTile(TextView tv, int numAdjBomb) {
+        tv.setTextColor(Color.GRAY);
+        tv.setBackgroundColor(Color.LTGRAY);
+        tv.setText(String.valueOf(numAdjBomb));
+    }
+
+    private int numAdjacentMine(int i, int j) { // get adjacent bombs
+        int[] row = {1,-1,0,0,1,-1,-1,1};
+        int[] col = {0,0,1,-1,1,-1,1,-1};
+
+        int adjBombCnt = 0;
+
+        for (int k = 0; k < 8; k++) {
+            int r1 = i + row[k];
+            int c1 = j + col[k];
+
+            if (r1 >= 0 && r1 < 12 && c1 >= 0 && c1 < 10 && isBomb[r1][c1]) {
+                adjBombCnt++;
+            }
+        }
+        return adjBombCnt;
     }
 
     private void placeRandomMines() { // part of mine sweeper set up
