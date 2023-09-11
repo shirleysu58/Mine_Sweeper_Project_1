@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     // when a TextView is clicked, we know which cell it is
     private ArrayList<TextView> cell_tvs;
     private TextView[][] mineSweeperGrid;
+    private boolean[][] isBomb;
 
     private int dpToPixel(int dp) {
         float density = Resources.getSystem().getDisplayMetrics().density;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         cell_tvs = new ArrayList<TextView>();
         mineSweeperGrid = new TextView[12][10];
+        isBomb = new boolean[12][10];
 
 
         GridLayout grid = (GridLayout) findViewById(R.id.gridLayout01);
@@ -56,6 +58,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
+    }
+
+    private void placeRandomMines() { // part of mine sweeper set up
+        int uniqueBombCnt = 0;
+        while (uniqueBombCnt < 4) {
+            int r= (int)(Math.random() * 12);
+            int c = (int)(Math.random() * 10);
+
+            if (isBomb[r][c]) { // no repeat bombs
+                continue;
+            }
+
+            isBomb[r][c] = true;
+            uniqueBombCnt++;
+        }
 
     }
 
