@@ -21,12 +21,12 @@ public class MainActivity2 extends AppCompatActivity {
             String timePassed = Integer.toString(intent.getIntExtra("time", 0));
             // change text display
             TextView textView = findViewById(R.id.textViewResult);
-            textView.setText("You Won! Passed in " + timePassed + "seconds");
+            textView.setText("You Won! Passed in " + timePassed + " seconds");
         } else {
             String timePassed = Integer.toString(intent.getIntExtra("time", 0));
             // change text display
             TextView textView = findViewById(R.id.textViewResult);
-            textView.setText("You Lost :(. Used up " + timePassed + "seconds");
+            textView.setText("You Lost :(. Used up " + timePassed + " seconds");
 
         }
 
